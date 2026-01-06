@@ -19,9 +19,13 @@ if (!is_dir($upload_dir)) {
     mkdir($upload_dir, 0755, true);
 }
 
-/* Conexión */
-$con = mysqli_connect($db_host, $db_user, $db_pass);
-if (!$con) {
+/* Conexión (Modificada para Azure con SSL) */
+$con = mysqli_init();
+// Azure en Linux guarda los certificados CA aquí:
+mysqli_ssl_set($con, NULL, NULL, "/etc/ssl/certs/ca-certificates.crt", NULL, NULL);
+
+// Conectamos usando real_connect con la bandera SSL
+if (!mysqli_real_connect($con, $db_host, $db_user, $db_pass, NULL, 3306, NULL, MYSQLI_CLIENT_SSL)) {
     die('Error conexión MySQL: ' . mysqli_connect_error());
 }
 
